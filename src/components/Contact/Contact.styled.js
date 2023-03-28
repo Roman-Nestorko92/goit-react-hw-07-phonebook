@@ -52,8 +52,14 @@ export const Number = styled.p`
 export const ButtonWrapper = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-top: -50px;
+  margin-top: -30px;
   margin-left: 10px;
+  @media screen and (min-width: 768px) {
+    margin-top: -50px;
+  }
+  @media screen and (min-width: 1340px) {
+    margin-top: -60px;
+  }
 `;
 
 export const Button = styled.button`
