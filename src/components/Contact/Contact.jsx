@@ -1,21 +1,52 @@
+import DeletingContact from 'components/DeletingContact/DeletingContact';
+import Modal from 'components/Modal';
+import useShowModal from 'hooks/useShowModal';
 import PropTypes from 'prop-types';
-import { FaTrash, FaUserAlt } from 'react-icons/fa';
-import { Button, Icon, Number, Wrapper } from './Contact.styled';
+import { FaTrash, FaUserEdit } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import {
+  Button,
+  ButtonWrapper,
+  Label,
+  Name,
+  Number,
+  PersonalData,
+  StyledLink,
+  Wrapper,
+} from './Contact.styled';
 
-function Contact({ name, number, onDeleteContact }) {
+function Contact({ id, name, phone }) {
+  const { showModal, togleModal } = useShowModal(false);
+
+  const navigate = useNavigate();
+  const openEditPage = () => navigate(`/contacts/${id}/edit`);
+
   return (
     <>
+      {showModal && (
+        <Modal onClose={togleModal} title={name}>
+          <DeletingContact id={id} name={name} togleModal={togleModal} />
+        </Modal>
+      )}
+
       <Wrapper>
-        <Icon>
-          <FaUserAlt />
-        </Icon>
-        <p>{name}</p>
-      </Wrapper>
-      <Wrapper>
-        <Number>{number}</Number>
-        <Button type="button" onClick={onDeleteContact}>
-          <FaTrash />
-        </Button>
+        <StyledLink to={`/contacts/${id}`}>
+          <PersonalData>
+            <Name>{name}</Name>
+            <Number>
+              <Label>Phone:</Label>
+              {phone}
+            </Number>
+          </PersonalData>
+        </StyledLink>
+        <ButtonWrapper>
+          <Button type="button" onClick={togleModal}>
+            <FaTrash />
+          </Button>
+          <Button type="button" onClick={openEditPage}>
+            <FaUserEdit />
+          </Button>
+        </ButtonWrapper>
       </Wrapper>
     </>
   );

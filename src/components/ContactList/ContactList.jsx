@@ -1,40 +1,40 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { deleteContact, getContacts, getFilter } from 'redux/contact-slice';
+import { useSelector } from 'react-redux';
+import { getFilter } from 'redux/contact-selectors';
+import { Item, List } from './ContactList.styled';
+import { useGetContactsQuery } from 'redux/contact-API';
 import Contact from 'components/Contact/Contact';
-import { Item } from './ContactList.styled';
+import Loader from 'components/Loader/Loader';
+import NotFound from 'components/NotFound/NotFound';
 
 function ContactList() {
-  const filter = useSelector(getFilter);
-  const contacts = useSelector(getContacts);
-
-  const dispatch = useDispatch();
-
-  const deleteSelectedContact = contactId => dispatch(deleteContact(contactId));
+  const { data: contacts, isFetching, error } = useGetContactsQuery();
+  const { filter } = useSelector(state => getFilter(state));
 
   const filtredContacts = () => {
     const normalizedFilter = filter.toLowerCase();
-    return contacts.filter(contact =>
-      contact.name.toLowerCase().includes(normalizedFilter)
+    return (
+      contacts &&
+      contacts.filter(contact =>
+        contact.name.toLowerCase().includes(normalizedFilter)
+      )
     );
   };
 
-  const filteredContactList = filtredContacts();
+  const filtredContactList = filtredContacts();
 
   return (
-    <ul>
-      {filteredContactList.map(({ id, name, number }) => {
-        return (
-          <Item key={id}>
-            <Contact
-              name={name}
-              number={number}
-              onDeleteContact={() => deleteSelectedContact(id)}
-              contactId={id}
-            />
-          </Item>
-        );
-      })}
-    </ul>
+    <List>
+      {isFetching && <Loader />}
+      {error && <NotFound data={error.data} status={error.status} />}
+      {contacts &&
+        filtredContactList.map(({ id, name, phone }) => {
+          return (
+            <Item key={id}>
+              <Contact id={id} name={name} phone={phone} />
+            </Item>
+          );
+        })}
+    </List>
   );
 }
 
